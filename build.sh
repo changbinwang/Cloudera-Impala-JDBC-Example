@@ -1,1 +1,2 @@
-mvn clean compile 
+#!/bin/sh
+mvn clean compile
