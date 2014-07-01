@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class ClouderaImpalaJdbcExample {
+public class ImpalaJdbcExample {
 	
 	// 需要运行的query
 	private static final String SQL_STATEMENT1 = "select compid,sum(case isimp when 0 then usd else 0 end) usd_exp,sum(case isimp when 1 then usd else 0 end) usd_imp from collect_2006 group by compid";

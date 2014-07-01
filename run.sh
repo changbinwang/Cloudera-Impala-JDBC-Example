@@ -1,2 +1,2 @@
 #!/bin/sh
-mvn exec:java -Dexec.mainClass=com.changbinwang.example.ClouderaImpalaJdbcExample
+mvn exec:java -Dexec.mainClass=com.changbinwang.example.ImpalaJdbcExample
