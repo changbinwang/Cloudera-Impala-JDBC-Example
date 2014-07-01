@@ -15,6 +15,12 @@
 	</properties>
 
 	<dependencies>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-client</artifactId>
+            <version>2.3.0-cdh5.0.0</version>
+        </dependency>
+
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
@@ -24,31 +30,31 @@
 		<dependency>
 			<groupId>org.apache.hive</groupId>
 			<artifactId>hive-jdbc</artifactId>
-			<version>0.10.0-cdh4.2.1</version>
+			<version>0.12.0-cdh5.0.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.hive</groupId>
 			<artifactId>hive-metastore</artifactId>
-			<version>0.10.0-cdh4.2.1</version>
+			<version>0.12.0-cdh5.0.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.hive</groupId>
 			<artifactId>hive-service</artifactId>
-			<version>0.10.0-cdh4.2.1</version>
+			<version>0.12.0-cdh5.0.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.thrift</groupId>
 			<artifactId>libfb303</artifactId>
-			<version>0.9.0</version>
+			<version>0.5.0-cdh</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.thrift</groupId>
 			<artifactId>libthrift</artifactId>
-			<version>0.9.0</version>
+			<version>0.9.0-cdh5-1</version>
 		</dependency>
 
 		<dependency>
