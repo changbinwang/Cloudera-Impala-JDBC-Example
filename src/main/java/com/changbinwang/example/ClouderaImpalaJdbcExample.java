@@ -1,38 +1,48 @@
 package com.changbinwang.example;
 
 import com.google.common.base.Stopwatch;
+import org.apache.commons.codec.digest.DigestUtils;
+import redis.clients.jedis.Jedis;
 
 import java.sql.*;
+import java.util.List;
 
 public class ClouderaImpalaJdbcExample {
-	
-	// 需要运行的query
-    private static final String SQL_STATEMENT2 = "select hs,compid,sum(case isimp when 0 then num else 0 end) num_exp,sum(case isimp when 1 then num else 0 end) num_imp from  collect_2006_test2 group by hs,compid limit 100";
-    private static final String SQL_STATEMENT1 = "select compid,sum(case isimp when 0 then usd else 0 end) usd_exp,sum(case isimp when 1 then usd else 0 end) usd_imp from collect_2006_test2 group by compid limit 100";
-
-	// impalad的启动地址
-	private static final String IMPALAD_HOST1 = "192.168.100.30";
-    private static final String IMPALAD_HOST2 = "192.168.100.20";
-    private static final String IMPALAD_HOST3 = "192.168.100.40";
-
-	// port 21050 is the default impalad JDBC port
-	private static final String IMPALAD_JDBC_PORT = "21050";
-
-	private static final String CONNECTION_URL1 = "jdbc:hive2://" + IMPALAD_HOST1 + ':' + IMPALAD_JDBC_PORT + "/;auth=noSasl";
-    private static final String CONNECTION_URL2 = "jdbc:hive2://" + IMPALAD_HOST2 + ':' + IMPALAD_JDBC_PORT + "/;auth=noSasl";
-    private static final String CONNECTION_URL3 = "jdbc:hive2://" + IMPALAD_HOST3 + ':' + IMPALAD_JDBC_PORT + "/;auth=noSasl";
-
-	private static final String JDBC_DRIVER_NAME = "org.apache.hive.jdbc.HiveDriver";
 
 
+
+
+    private static final String JDBC_DRIVER_NAME = "org.apache.hive.jdbc.HiveDriver";
 	public static void main(String[] args) {
+
+        String SQL_STATEMENT1 = args[0];
+
+        // impalad的启动地址
+        String IMPALAD_HOST1 = args[1];
+        String IMPALAD_HOST2 = args[2];
+        String IMPALAD_HOST3 = args[3];
+
+        int concurrentNum = Integer.parseInt(args[4]);
+
+        // port 21050 is the default impalad JDBC port
+        String IMPALAD_JDBC_PORT = "21050";
+
+        String CONNECTION_URL1 = "jdbc:hive2://" + IMPALAD_HOST1 + ':' + IMPALAD_JDBC_PORT + "/;auth=noSasl";
+        String CONNECTION_URL2 = "jdbc:hive2://" + IMPALAD_HOST2 + ':' + IMPALAD_JDBC_PORT + "/;auth=noSasl";
+        String CONNECTION_URL3 = "jdbc:hive2://" + IMPALAD_HOST3 + ':' + IMPALAD_JDBC_PORT + "/;auth=noSasl";
+
+
+
 
 		System.out.println("\n=============================================");
 		System.out.println("Cloudera Impala JDBC Example");
 		System.out.println("Using Connection URL: " + CONNECTION_URL1);
+        System.out.println("Using Connection URL: " + CONNECTION_URL2);
+        System.out.println("Using Connection URL: " + CONNECTION_URL3);
+        System.out.println("The sql statement is "+ SQL_STATEMENT1);
 
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < concurrentNum; i++) {
            if (i%3==0){
                Thread thread = new Thread(new RunQuery(SQL_STATEMENT1,CONNECTION_URL1));
                thread.start();
@@ -50,6 +60,8 @@ public class ClouderaImpalaJdbcExample {
     }
 
     private static class RunQuery implements  Runnable{
+
+        Jedis jedis = new Jedis("localhost");
 
         private String SQL_STATEMENT;
         private String CONNECTION_URL;
@@ -73,13 +85,19 @@ public class ClouderaImpalaJdbcExample {
                 stmt = con.createStatement();
                 System.out.println("Running Query: " + SQL_STATEMENT);
 
-                rs = stmt.executeQuery(SQL_STATEMENT);
+                if(jedis.exists("length" + DigestUtils.md5Hex(SQL_STATEMENT))){
+                    List<String> result = jedis.lrange(DigestUtils.md5Hex(SQL_STATEMENT),0,Integer.parseInt(jedis.get("length"+DigestUtils.md5Hex(SQL_STATEMENT))));
+                }else{
+                    rs = stmt.executeQuery(SQL_STATEMENT);
 
-
-                // print the results to the console
-                while (rs != null && rs.next()) {
-                    // the example query returns one String column
-//                    System.out.println(rs.getString(1));
+                    Long length=0L;
+                    // print the results to the console
+                    while (rs != null && rs.next()) {
+                        length = jedis.lpush(DigestUtils.md5Hex(SQL_STATEMENT), new String[]{rs.toString()});
+                    }
+                    if(length!=0){
+                        jedis.set("length"+DigestUtils.md5Hex(SQL_STATEMENT),length.toString());
+                    }
                 }
                 timer.stop();
                 System.out.println("The time used for excution: "+timer.elapsedMillis());
