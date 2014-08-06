@@ -4,38 +4,10 @@ import com.google.common.base.Stopwatch;
 import org.apache.commons.codec.digest.DigestUtils;
 import redis.clients.jedis.Jedis;
 
-<<<<<<< HEAD:src/main/java/com/changbinwang/example/ImpalaJdbcExample.java
-public class ImpalaJdbcExample {
-	
-	// 需要运行的query
-	private static final String SQL_STATEMENT1 = "select compid,sum(case isimp when 0 then usd else 0 end) usd_exp,sum(case isimp when 1 then usd else 0 end) usd_imp from collect_2006 group by compid";
-    private static final String SQL_STATEMENT2 = "select hs,compid,sum(case isimp when 0 then num else 0 end) num_exp,sum(case isimp when 1 then num else 0 end) num_imp from  collect_2006 group by hs,compid";
-	
-	// impalad的启动地址
-	private static final String IMPALAD_HOST = "172.16.189.130";
-	
-	// port 21050 is the default impalad JDBC port 
-	private static final String IMPALAD_JDBC_PORT = "21050";
-
-	private static final String CONNECTION_URL = "jdbc:hive2://" + IMPALAD_HOST + ':' + IMPALAD_JDBC_PORT + "/;auth=noSasl";
-
-	private static final String JDBC_DRIVER_NAME = "org.apache.hive.jdbc.HiveDriver";
-
-	public static void main(String[] args) {
-
-		System.out.println("\n=============================================");
-		System.out.println("Cloudera Impala JDBC Example");
-		System.out.println("Using Connection URL: " + CONNECTION_URL);
-=======
 import java.sql.*;
 import java.util.List;
->>>>>>> concurrent:src/main/java/com/changbinwang/example/ClouderaImpalaJdbcExample.java
 
-public class ClouderaImpalaJdbcExample {
-
-
-
-
+public class ImpalaJdbcExample {
     private static final String JDBC_DRIVER_NAME = "org.apache.hive.jdbc.HiveDriver";
 	public static void main(String[] args) {
 
